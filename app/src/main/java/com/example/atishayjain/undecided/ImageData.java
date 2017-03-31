@@ -3,6 +3,7 @@ package com.example.atishayjain.undecided;
 import android.net.Credentials;
 import android.os.AsyncTask;
 import android.util.Base64;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class ImageData extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
         try{
-            String urlFromParams = params[0] + "?next_cursor=";
+            String urlFromParams = "https://api.cloudinary.com/v1_1/dahkpcrbb/resources/image" + "?next_cursor=" + params[0];
            // HashMap<String, String> headerMap = new HashMap<>();
            // headerMap.put("", "");
             //headerMap.put("", "");
@@ -79,8 +80,10 @@ public class ImageData extends AsyncTask<String, Void, String> {
         super.onPostExecute(s);
         if(s == null){
             s = "Error";
+            iLoaded.getImages(s, responseCode);
         }
         else{
+            Log.d("response_is", s);
             iLoaded.getImages(s, responseCode);
         }
     }

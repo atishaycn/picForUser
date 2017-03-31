@@ -14,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,12 +26,25 @@ import Models.Resource;
  * Created by atishayjain on 31/03/17.
  */
 
-public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
 
     private LayoutInflater inflater;
 
     public static final int VIEW_ITEM = 0;
     public static final int VIEW_PROGRESS = 1;
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.share:
+                break;
+            case R.id.download:
+            break;
+        }
+
+
+    }
 
     public interface retryButtonClicked {
         void onClickRetry();
@@ -102,27 +117,13 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if(holder instanceof MoviewViewHolder){
-
-            moviewViewHolderholder.movieName.setText(mlist.get(position).getUrl());
-            Log.d("title", mlist.get(position).getUrl());
-            Log.d("Position", String.valueOf(position));
-//        Log.d("test", mlist.get(position).getPosterPath());
             String link = mlist.get(position).getUrl();
+            moviewViewHolderholder.movieImage.setImageDrawable(null);
             Picasso.with(cont).load(link).placeholder(R.mipmap.black16).into(moviewViewHolderholder.movieImage);
-//            Picasso.with(cont).load("https://image.tmdb.org/t/p/w500" + mlist.get(position).getPosterPath()).into(moviewViewHolderholder.movieImage);
-            moviewViewHolderholder.movieImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            moviewViewHolderholder.shareImage.setOnClickListener(this);
+            moviewViewHolderholder.downloadImage.setOnClickListener(this);
 
-                    Bundle bundle = new Bundle();
-                    bundle.putString("over", mlist.get(position).getOverview());
-                    bundle.putString("id", String.valueOf(mlist.get(position).getId()));
-                    Intent intent = new Intent(cont, MovieDetails.class);
-                    intent.putExtras(bundle);
-                    cont.startActivity(intent);
 
-                }
-            });
         }
         else if(holder instanceof ProgressViewHolder){
             StaggeredGridLayoutManager.LayoutParams ls = (StaggeredGridLayoutManager.LayoutParams) progressViewHolder.itemView.getLayoutParams();
@@ -176,14 +177,14 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     class MoviewViewHolder extends RecyclerView.ViewHolder{
 
-        TextView movieName;
-        ImageView movieImage;
+        ImageView movieImage, shareImage, downloadImage;
 
 
         public MoviewViewHolder(View itemView) {
             super(itemView);
-            movieName = (TextView) itemView.findViewById(R.id.movieName);
             movieImage = (ImageView) itemView.findViewById(R.id.movieImage);
+            shareImage = (ImageView) itemView.findViewById(R.id.share);
+            downloadImage = (ImageView) itemView.findViewById(R.id.download);
         }
     }
 
