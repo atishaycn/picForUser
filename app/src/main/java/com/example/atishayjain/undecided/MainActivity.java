@@ -31,8 +31,9 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         layoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
         //layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+        layoutManager.setAutoMeasureEnabled(false);
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setHasFixedSize(true);
+        //mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addOnScrollListener(mRecyclerScrollListener);
         new ImageData(this).execute("");
     }
@@ -111,7 +112,8 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                 adapter = new ImageAdapter(this, mlist, responseCode, this);
                 mRecyclerView.setAdapter(adapter);
             } else {
-                adapter.notifyDataSetChanged();
+                //adapter.notifyDataSetChanged();
+                adapter.notifyItemRangeInserted(adapter.getItemCount(), mlist.size() - 1 );
             }
 //            if (progressBar != null) {
 //                progressBar.setVisibility(View.GONE);
