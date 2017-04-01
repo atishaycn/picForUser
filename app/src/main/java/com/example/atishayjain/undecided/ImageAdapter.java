@@ -145,13 +145,13 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 else{
 
                 }
-                Picasso.with(cont).load(link).placeholder(R.mipmap.black16).into(movieNewHolder.movieImage);
-                //Glide.with(cont).load(link).crossFade().diskCacheStrategy(DiskCacheStrategy.ALL).into(movieNewHolder.movieImage);
+               // Picasso.with(cont).load(link).placeholder(R.mipmap.black16).into(movieNewHolder.movieImage);
+                Glide.with(cont).load(link).crossFade().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.black16).dontAnimate().into(movieNewHolder.movieImage);
                 movieNewHolder.shareImage.setOnClickListener(this);
                 movieNewHolder.downloadImage.setOnClickListener(this);
             }
             else{
-                //Glide.clear(movieNewHolder.movieImage);
+                Glide.clear(movieNewHolder.movieImage);
                 movieNewHolder.movieImage.setImageDrawable(null);
             }
 
