@@ -1,5 +1,6 @@
 package com.example.atishayjain.undecided;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -52,7 +53,6 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     retryButtonClicked mretryButtonClicked;
 
 
-
     Context cont;
     int responseCode=0;
     //Model data  = new Model();
@@ -62,7 +62,6 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         inflater = LayoutInflater.from(context);
 //        this.data = data;
         cont = context;
-
         this.mretryButtonClicked = mretryButtonClicked;
 //        mlist.addAll(data.getResults());
 //        Log.d("List", String.valueOf(mlist));
@@ -149,10 +148,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    private void shareImage(Bitmap bmp) {
-        Uri bmpUri = getLocalBitmapUrl(bmp);
+    private void shareImage(final Bitmap bmp) {
+        final Uri bmpUri = getLocalBitmapUrl(bmp);
         Intent shareIntent = new Intent();
-        shareIntent.setPackage("com.whatsapp");
+        //shareIntent.setPackage("com.whatsapp");
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_TEXT, "Shared via UNDECIDED");
         shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
@@ -241,6 +240,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             movieImage = (ImageView) itemView.findViewById(R.id.movieImage);
             shareImage = (ImageView) itemView.findViewById(R.id.share);
             downloadImage = (ImageView) itemView.findViewById(R.id.download);
+
         }
     }
 
