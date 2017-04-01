@@ -1,12 +1,14 @@
 package com.example.atishayjain.undecided;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -17,10 +19,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.model.StringLoader;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.squareup.picasso.Picasso;
@@ -111,7 +113,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
     }
-    ArrayList<String> linkArray = new ArrayList<String>();
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if(holder instanceof MoviewViewHolder){
@@ -129,6 +131,13 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                            @Override
                            public void onClick(View view){
                                shareImage(bmp);
+                           }
+                       });
+
+                       movieNewHolder.downloadImage.setOnClickListener(new View.OnClickListener() {
+                           @Override
+                           public void onClick(View v) {
+                               saveImageToGallery(bmp);
                            }
                        });
                    }
@@ -160,6 +169,32 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         cont.startActivity(Intent.createChooser(shareIntent, "SHARE"));
     }
 
+    private void saveToGallery(String absolutePath) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+        contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        contentValues.put(MediaStore.MediaColumns.DATA, absolutePath);
+        cont.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+        Toast toast = Toast.makeText(cont, "Saved to Gallery", Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    private void saveImageToGallery(Bitmap bmp){
+        File file = new File(cont.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+        FileOutputStream out;
+        try {
+            out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            try {
+                out.close();
+                saveToGallery(file.getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
     private Uri getLocalBitmapUrl(Bitmap bmp) {
         Uri bmpUri = null;
         File file = new File(cont.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
