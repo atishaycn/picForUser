@@ -2,7 +2,10 @@ package com.example.atishayjain.undecided;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -17,8 +20,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.model.StringLoader;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,25 +38,12 @@ import Models.Resource;
  * Created by atishayjain on 31/03/17.
  */
 
-public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
+public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private LayoutInflater inflater;
 
     public static final int VIEW_ITEM = 0;
     public static final int VIEW_PROGRESS = 1;
-
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        switch (id) {
-            case R.id.share:
-                break;
-            case R.id.download:
-            break;
-        }
-
-
-    }
 
     public interface retryButtonClicked {
         void onClickRetry();
@@ -122,11 +118,23 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if(holder instanceof MoviewViewHolder){
             final MoviewViewHolder movieNewHolder = (MoviewViewHolder) holder;
             if(mlist.get(position).getUrl() != null && !mlist.get(position).getUrl().isEmpty()) {
-                String link = mlist.get(position).getUrl();
+                final String link = mlist.get(position).getUrl();
                // Picasso.with(cont).load(link).placeholder(R.mipmap.black16).into(movieNewHolder.movieImage);
-                Glide.with(cont).load(link).crossFade().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.black16).dontAnimate().into(movieNewHolder.movieImage);
-                movieNewHolder.shareImage.setOnClickListener(this);
-                movieNewHolder.downloadImage.setOnClickListener(this);
+                //Glide.with(cont).load(link).crossFade().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.black16).dontAnimate().into(movieNewHolder.movieImage);
+                Glide.with(cont).load(link).asBitmap().diskCacheStrategy(DiskCacheStrategy.ALL).dontAnimate().into(new BitmapImageViewTarget(movieNewHolder.movieImage)
+                {
+                   @Override
+                    public void onResourceReady(final Bitmap bmp, GlideAnimation anim) {
+                       Glide.with(cont).load(link).crossFade().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.black16).dontAnimate().into(movieNewHolder.movieImage);
+                       movieNewHolder.shareImage.setOnClickListener(new View.OnClickListener(){
+                           @Override
+                           public void onClick(View view){
+                               shareImage(bmp);
+                           }
+                       });
+                   }
+                   });
+
             }
             else{
                 Glide.clear(movieNewHolder.movieImage);
@@ -140,6 +148,38 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ls.setFullSpan(true);
         }
     }
+
+    private void shareImage(Bitmap bmp) {
+        Uri bmpUri = getLocalBitmapUrl(bmp);
+        Intent shareIntent = new Intent();
+        shareIntent.setPackage("com.whatsapp");
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Shared via UNDECIDED");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+        shareIntent.setType("image/*");
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        cont.startActivity(Intent.createChooser(shareIntent, "SHARE"));
+    }
+
+    private Uri getLocalBitmapUrl(Bitmap bmp) {
+        Uri bmpUri = null;
+        File file = new File(cont.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+        FileOutputStream out;
+        try {
+            out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            bmpUri = Uri.fromFile(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
+    }
+
 
 //    @Override
 //    public void onBindViewHolder(MoviewViewHolder holder, final int position) {
