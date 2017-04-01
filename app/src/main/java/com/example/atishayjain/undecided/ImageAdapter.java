@@ -14,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.model.StringLoader;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -113,15 +116,44 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
     }
-
+    ArrayList<String> linkArray = new ArrayList<String>();
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if(holder instanceof MoviewViewHolder){
-            String link = mlist.get(position).getUrl();
-            moviewViewHolderholder.movieImage.setImageDrawable(null);
-            Picasso.with(cont).load(link).placeholder(R.mipmap.black16).into(moviewViewHolderholder.movieImage);
-            moviewViewHolderholder.shareImage.setOnClickListener(this);
-            moviewViewHolderholder.downloadImage.setOnClickListener(this);
+            final MoviewViewHolder movieNewHolder = (MoviewViewHolder) holder;
+            if(mlist.get(position).getUrl() != null && !mlist.get(position).getUrl().isEmpty()) {
+                String link = mlist.get(position).getUrl();
+                boolean same = false;
+                if(linkArray.size() == 0){
+                    linkArray.add(link);
+                    same = true;
+                }
+                else{
+                    for(int i = 0; i < linkArray.size(); i++){
+                        if(linkArray.get(i).equalsIgnoreCase(link)){
+                            Log.d("It is same", "SAME");
+                            same = true;
+                        }
+                        else{
+                            Log.d("It is NOT same", "NOT_same");
+                        }
+                    }
+                }
+                if(!same){
+                    linkArray.add(link);
+                }
+                else{
+
+                }
+                Picasso.with(cont).load(link).placeholder(R.mipmap.black16).into(movieNewHolder.movieImage);
+                //Glide.with(cont).load(link).crossFade().diskCacheStrategy(DiskCacheStrategy.ALL).into(movieNewHolder.movieImage);
+                movieNewHolder.shareImage.setOnClickListener(this);
+                movieNewHolder.downloadImage.setOnClickListener(this);
+            }
+            else{
+                //Glide.clear(movieNewHolder.movieImage);
+                movieNewHolder.movieImage.setImageDrawable(null);
+            }
 
 
         }
@@ -173,6 +205,12 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     ProgressBar progressBar;
     TextView noInternet;
+
+    @Override
+    public long getItemId(int position) {
+        return  position;
+    }
+
     Button tryAgain;
 
     class MoviewViewHolder extends RecyclerView.ViewHolder{
