@@ -123,28 +123,6 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             final MoviewViewHolder movieNewHolder = (MoviewViewHolder) holder;
             if(mlist.get(position).getUrl() != null && !mlist.get(position).getUrl().isEmpty()) {
                 String link = mlist.get(position).getUrl();
-                boolean same = false;
-                if(linkArray.size() == 0){
-                    linkArray.add(link);
-                    same = true;
-                }
-                else{
-                    for(int i = 0; i < linkArray.size(); i++){
-                        if(linkArray.get(i).equalsIgnoreCase(link)){
-                            Log.d("It is same", "SAME");
-                            same = true;
-                        }
-                        else{
-                            Log.d("It is NOT same", "NOT_same");
-                        }
-                    }
-                }
-                if(!same){
-                    linkArray.add(link);
-                }
-                else{
-
-                }
                // Picasso.with(cont).load(link).placeholder(R.mipmap.black16).into(movieNewHolder.movieImage);
                 Glide.with(cont).load(link).crossFade().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.black16).dontAnimate().into(movieNewHolder.movieImage);
                 movieNewHolder.shareImage.setOnClickListener(this);
