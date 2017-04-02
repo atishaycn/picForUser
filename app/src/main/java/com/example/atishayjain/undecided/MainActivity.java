@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
             int visibleItemAmount = layoutManager.getChildCount();
             int totalCount = layoutManager.getItemCount();
             int [] firstItem = layoutManager.findFirstVisibleItemPositions(null);
-            if((firstItem[0] + visibleItemAmount) >= totalCount && firstItem[0] >= 0 && totalCount >= 9){
+            if((firstItem[0] + visibleItemAmount) >= totalCount - 5 && firstItem[0] >= 0 && totalCount >= 9){
 
 //                if(i == 1){
 
