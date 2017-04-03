@@ -28,15 +28,21 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     private String nextCursor ="";
     private TextView mNoInternetTextView;
     private Button mtryAgainButton;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initViews();
+    }
+
+    private void initViews() {
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mNoInternetTextView = (TextView) findViewById(R.id.internet);
         mtryAgainButton = (Button) findViewById(R.id.tryAgain);
         mtryAgainButton.setOnClickListener(this);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress);
         layoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
         //layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         layoutManager.setAutoMeasureEnabled(false);
@@ -107,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     @Override
     public void getImages(String stringBuilder, int responseCode) {
         if (stringBuilder != "Error" && responseCode == 200) {
+            mProgressBar.setVisibility(View.GONE);
             mNoInternetTextView.setVisibility(View.GONE);
             mtryAgainButton.setVisibility(View.GONE);
             Gson gson = new Gson();
@@ -137,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
             }
             else{
                 if(mNoInternetTextView.getVisibility() == View.GONE) {
+                    mProgressBar.setVisibility(View.GONE);
                     mNoInternetTextView.setVisibility(View.VISIBLE);
                     mtryAgainButton.setVisibility(View.VISIBLE);
                 }
@@ -150,6 +158,9 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
         switch (v.getId()){
             case R.id.tryAgain:
                 new ImageData(this).execute("");
+                mNoInternetTextView.setVisibility(View.GONE);
+                mtryAgainButton.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.VISIBLE);
         }
     }
 }
