@@ -115,9 +115,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if(holder instanceof MoviewViewHolder){
             final MoviewViewHolder movieNewHolder = (MoviewViewHolder) holder;
+            movieNewHolder.mImageProgressBar.setVisibility(View.VISIBLE);
             if(mlist.get(position).getUrl() != null && !mlist.get(position).getUrl().isEmpty()) {
                 final String link = mlist.get(position).getUrl();
                // Picasso.with(cont).load(link).placeholder(R.mipmap.black16).into(movieNewHolder.movieImage);
@@ -127,6 +128,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                    @Override
                     public void onResourceReady(final Bitmap bmp, GlideAnimation anim) {
                        Glide.with(cont).load(link).crossFade().diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.mipmap.black16).dontAnimate().into(movieNewHolder.movieImage);
+                       movieNewHolder.mImageProgressBar.setVisibility(View.INVISIBLE);
                        movieNewHolder.shareImage.setOnClickListener(new View.OnClickListener(){
                            @Override
                            public void onClick(View view){
@@ -268,6 +270,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     class MoviewViewHolder extends RecyclerView.ViewHolder{
 
         ImageView movieImage, shareImage, downloadImage;
+        ProgressBar mImageProgressBar;
 
 
         public MoviewViewHolder(View itemView) {
@@ -275,7 +278,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             movieImage = (ImageView) itemView.findViewById(R.id.movieImage);
             shareImage = (ImageView) itemView.findViewById(R.id.share);
             downloadImage = (ImageView) itemView.findViewById(R.id.download);
-
+            mImageProgressBar = (ProgressBar) itemView.findViewById(R.id.imageProgressBar);
         }
     }
 
