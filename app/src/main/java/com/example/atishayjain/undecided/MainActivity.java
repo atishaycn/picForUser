@@ -6,7 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+
 import com.google.gson.Gson;
 
 
@@ -16,19 +19,24 @@ import java.util.List;
 import Models.MainModel;
 import Models.Resource;
 
-public class MainActivity extends AppCompatActivity implements ImageData.ImagesLoaded, ImageAdapter.retryButtonClicked {
+public class MainActivity extends AppCompatActivity implements ImageData.ImagesLoaded, ImageAdapter.retryButtonClicked, View.OnClickListener {
 
     private RecyclerView mRecyclerView;
     private StaggeredGridLayoutManager layoutManager;
     private ImageAdapter adapter;
     public List<Resource> mlist = new ArrayList<Resource>();
     private String nextCursor ="";
+    private TextView mNoInternetTextView;
+    private Button mtryAgainButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        mNoInternetTextView = (TextView) findViewById(R.id.internet);
+        mtryAgainButton = (Button) findViewById(R.id.tryAgain);
+        mtryAgainButton.setOnClickListener(this);
         layoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
         //layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         layoutManager.setAutoMeasureEnabled(false);
@@ -99,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     @Override
     public void getImages(String stringBuilder, int responseCode) {
         if (stringBuilder != "Error" && responseCode == 200) {
+            mNoInternetTextView.setVisibility(View.GONE);
+            mtryAgainButton.setVisibility(View.GONE);
             Gson gson = new Gson();
             data = gson.fromJson(String.valueOf(stringBuilder), MainModel.class);
             currentPage ++;
@@ -125,8 +135,21 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                 adapter.tryAgain.setVisibility(View.VISIBLE);
                 adapter.noInternet.setVisibility(View.VISIBLE);
             }
+            else{
+                if(mNoInternetTextView.getVisibility() == View.GONE) {
+                    mNoInternetTextView.setVisibility(View.VISIBLE);
+                    mtryAgainButton.setVisibility(View.VISIBLE);
+                }
+            }
         }
         isLoading = false;
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.tryAgain:
+                new ImageData(this).execute("");
+        }
+    }
 }
