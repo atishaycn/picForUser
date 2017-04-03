@@ -1,14 +1,19 @@
 package com.example.atishayjain.undecided;
 
+import android.*;
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -36,6 +41,8 @@ import java.util.List;
 
 import Models.Resource;
 
+import static android.support.v4.app.ActivityCompat.requestPermissions;
+
 
 /**
  * Created by atishayjain on 31/03/17.
@@ -43,6 +50,7 @@ import Models.Resource;
 
 public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private static final int WRITE_STORAGE_REQUEST = 1001;
     private LayoutInflater inflater;
 
     public static final int VIEW_ITEM = 0;
@@ -139,7 +147,12 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                        movieNewHolder.downloadImage.setOnClickListener(new View.OnClickListener() {
                            @Override
                            public void onClick(View v) {
-                               saveImageToGallery(bmp);
+                               if(permissionGranted()) {
+                                   saveImageToGallery(bmp);
+                               }
+                               else{
+
+                               }
                            }
                        });
                    }
@@ -158,6 +171,18 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ls.setFullSpan(true);
         }
     }
+
+    private boolean permissionGranted() {
+        if(cont instanceof MainActivity) {
+            if(ContextCompat.checkSelfPermission(cont, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(cont, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_STORAGE_REQUEST);
+            }
+        }
+        return false;
+    }
+
+
+
 
     private void shareImage(final Bitmap bmp) {
         final Uri bmpUri = getLocalBitmapUrl(bmp);
