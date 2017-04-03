@@ -7,6 +7,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     private TextView mNoInternetTextView;
     private Button mtryAgainButton;
     private ProgressBar mProgressBar;
+    private LinearLayout internetLL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
         mRecyclerView.setLayoutManager(layoutManager);
         //mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addOnScrollListener(mRecyclerScrollListener);
+        internetLL = (LinearLayout) findViewById(R.id.internetLL);
         new ImageData(this).execute("");
     }
 
@@ -116,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
             mProgressBar.setVisibility(View.GONE);
             mNoInternetTextView.setVisibility(View.GONE);
             mtryAgainButton.setVisibility(View.GONE);
+            internetLL.setVisibility(View.GONE);
             Gson gson = new Gson();
             data = gson.fromJson(String.valueOf(stringBuilder), MainModel.class);
             currentPage ++;
@@ -149,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                     mProgressBar.setVisibility(View.GONE);
                     mNoInternetTextView.setVisibility(View.VISIBLE);
                     mtryAgainButton.setVisibility(View.VISIBLE);
+                    internetLL.setVisibility(View.VISIBLE);
                 }
             }
         }
@@ -163,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                 mNoInternetTextView.setVisibility(View.GONE);
                 mtryAgainButton.setVisibility(View.GONE);
                 mProgressBar.setVisibility(View.VISIBLE);
+                internetLL.setVisibility(View.GONE);
         }
     }
 }

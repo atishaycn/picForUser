@@ -16,25 +16,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_margin="20dp"
+        android:layout_centerVertical="true"
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:id="@+id/internetLL"
+        >
  <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="No Internet Connection"
         android:textSize="20dp"
-        android:layout_centerInParent="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/internet"
         android:visibility="gone"
+        android:id="@+id/internet"
+
         />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Try Again"
         android:layout_below="@+id/internet"
-        android:layout_centerInParent="true"
-        android:id="@+id/tryAgain"
         android:visibility="gone"
+        android:layout_marginTop="10dp"
+        android:id="@+id/tryAgain"
         />
+    </LinearLayout>
 
     <ProgressBar
         android:layout_width="match_parent"
