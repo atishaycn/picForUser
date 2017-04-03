@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                     adapter.progressBar.setVisibility(View.GONE);
                     adapter.tryAgain.setVisibility(View.VISIBLE);
                     adapter.noInternet.setVisibility(View.VISIBLE);
+                    adapter.notifyItemChanged(mlist.size());
                 }
             }
             else{
