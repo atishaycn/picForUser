@@ -138,9 +138,11 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
         } else {
             // Toast.makeText(MainActivity.this, "No Internet", Toast.LENGTH_SHORT).show();
             if (currentPage != 1) {
-                adapter.progressBar.setVisibility(View.GONE);
-                adapter.tryAgain.setVisibility(View.VISIBLE);
-                adapter.noInternet.setVisibility(View.VISIBLE);
+                if(adapter != null && adapter.progressBar != null && adapter.tryAgain != null && adapter.noInternet != null) {
+                    adapter.progressBar.setVisibility(View.GONE);
+                    adapter.tryAgain.setVisibility(View.VISIBLE);
+                    adapter.noInternet.setVisibility(View.VISIBLE);
+                }
             }
             else{
                 if(mNoInternetTextView.getVisibility() == View.GONE) {
