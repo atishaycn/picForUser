@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -151,7 +152,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                                    saveImageToGallery(bmp);
                                }
                                else{
-
+                                   Toast.makeText(cont, "App doesn't have permissions.", Toast.LENGTH_LONG).show();
+                                   requsetStoragePermission();
                                }
                            }
                        });
@@ -172,15 +174,35 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    private boolean permissionGranted() {
+    private void requsetStoragePermission() {
         if(cont instanceof MainActivity) {
             if(ContextCompat.checkSelfPermission(cont, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(cont, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_STORAGE_REQUEST);
+                requestPermissions((Activity) cont, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_STORAGE_REQUEST);
+                //ActivityCompat.requestPermissions((Activity) cont, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_STORAGE_REQUEST);
+            }
+        }
+    }
+
+    private boolean permissionGranted() {
+        if(cont instanceof MainActivity) {
+            if(ContextCompat.checkSelfPermission(cont, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+                return true;
+                //ActivityCompat.requestPermissions((Activity) cont, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_STORAGE_REQUEST);
             }
         }
         return false;
     }
 
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    //    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == WRITE_STORAGE_REQUEST){
+            if(grantResults[0] == 0){
+
+            } else{
+                Toast.makeText(cont, "App doesn't have permissions.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 
 
 
