@@ -382,8 +382,6 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        Log.d("position", String.valueOf(position));
-        Log.d("Size", String.valueOf(mlist.size()));
         if(position >= mlist.size()){
             return VIEW_PROGRESS;
         }

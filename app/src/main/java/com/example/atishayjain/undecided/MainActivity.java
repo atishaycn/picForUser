@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,11 +46,13 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     private String mFirebaseUser, mFirebasePassword;
     private final String FIREBASE_ADDRESS = "https://picsforuser.firebaseio.com/";
     private boolean firstTime = true;
+    private Answers mFabricAnswers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
+        mFabricAnswers = Answers.getInstance();
         setContentView(R.layout.activity_main);
         getUserFromFirebase();
         initViews();
@@ -78,18 +82,20 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                     if(mFirebaseUser == null && mFirebasePassword == null){
                         bundle.putString("User_Name", "Error");
                         bundle.putString("User_Password", "Error");
+                        tagFabricDataEvent("Error", "Error");
                     }
                     else if(mFirebaseUser == null){
                         bundle.putString("User_Name", "Error");
                         bundle.putString("User_Password", mFirebasePassword);
+                        tagFabricDataEvent("Error", mFirebasePassword);
                     }
                     else {
                         bundle.putString("User_Name", mFirebaseUser);
                         bundle.putString("User_Password", "Error");
+                        tagFabricDataEvent(mFirebaseUser,"Error") ;
                     }
                 }
-
-                mFirebaseAnalytics.logEvent("Firebase_Date", bundle);
+                mFirebaseAnalytics.logEvent("Firebase_Data", bundle);
 
 
             }
@@ -99,6 +105,14 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                 System.out.println("The read failed: " + databaseError.getMessage());
             }
         });
+    }
+
+    private void tagFabricDataEvent(String userName, String password) {
+        mFabricAnswers.logCustom(new CustomEvent(
+                "FirebaseDate")
+        .putCustomAttribute("User Name", userName)
+        .putCustomAttribute("Password", password)
+        );
     }
 
     private void loadImages() {
@@ -171,6 +185,10 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
         Bundle bundle = new Bundle();
         bundle.putString("page", String.valueOf(currentPage));
         mFirebaseAnalytics.logEvent("Page_Numbers", bundle);
+        mFabricAnswers.logCustom(new CustomEvent(
+                "Page_Numbers")
+                .putCustomAttribute("page", String.valueOf(currentPage))
+        );
         new ImageData(MainActivity.this).execute(nextCursor, mFirebaseUser, mFirebasePassword);
         if(adapter.progressBar != null && adapter.tryAgain != null && adapter.noInternet != null) {
             adapter.progressBar.setVisibility(View.VISIBLE);
@@ -188,6 +206,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
         if (stringBuilder != "Error" && responseCode == 200) {
             bundle.putString("Response_Code", String.valueOf(responseCode));
             bundle.putString("Response", stringBuilder);
+            tagFabricResponse(String.valueOf(responseCode), stringBuilder);
             mProgressBar.setVisibility(View.GONE);
             mNoInternetTextView.setVisibility(View.GONE);
             mtryAgainButton.setVisibility(View.GONE);
@@ -221,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
             bundle.putString("Response_Code", String.valueOf(responseCode));
             bundle.putString("Response", stringBuilder);
             bundle.putString("Cursor_is", nextCursor);
+            tagFabricResponse(String.valueOf(responseCode), stringBuilder);
             if (currentPage != 1) {
                 if(adapter != null && adapter.progressBar != null && adapter.tryAgain != null && adapter.noInternet != null) {
                     adapter.progressBar.setVisibility(View.GONE);
@@ -239,7 +259,16 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
             }
         }
         mFirebaseAnalytics.logEvent("LoadedPageResponse", bundle);
+
         isLoading = false;
+    }
+
+    private void tagFabricResponse(String responseCode, String response) {
+        mFabricAnswers.logCustom(new CustomEvent(
+                "LoadedPageResponse")
+                .putCustomAttribute("Response_Code", responseCode)
+                .putCustomAttribute("Response", response)
+        );
     }
 
     @Override
@@ -254,6 +283,10 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                 Bundle bundle = new Bundle();
                 bundle.putString("Try_Again_Clicked", "Clicked");
                 mFirebaseAnalytics.logEvent("Try_Again", bundle);
+                mFabricAnswers.logCustom(new CustomEvent(
+                        "Try_Again")
+                        .putCustomAttribute("Try_Again_Clicked", "Clicked")
+                );
         }
     }
 }
