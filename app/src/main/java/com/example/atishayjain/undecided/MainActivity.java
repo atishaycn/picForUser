@@ -10,12 +10,18 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
-
+import Models.FirebaseData;
 import io.fabric.sdk.android.Fabric;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +41,52 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     private ProgressBar mProgressBar;
     private LinearLayout internetLL;
     private FirebaseAnalytics mFirebaseAnalytics;
+    private String mFirebaseUser, mFirebasePassword;
+    private final String FIREBASE_ADDRESS = "https://picsforuser.firebaseio.com/";
+    private boolean firstTime = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
+        getUserFromFirebase();
         initViews();
+    }
+
+    private void getUserFromFirebase() {
+        DatabaseReference userDetails = FirebaseDatabase.getInstance().getReferenceFromUrl(FIREBASE_ADDRESS);
+        userDetails.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                    FirebaseData mFirebase = dataSnapshot .getValue(FirebaseData.class);
+                    mFirebaseUser = mFirebase.getUsername();
+                    mFirebasePassword = mFirebase.getPassword();
+                if(mFirebaseUser != null && mFirebasePassword != null && firstTime){
+                    firstTime = false;
+                    loadImages();
+                }
+                else{
+                    mProgressBar.setVisibility(View.GONE);
+                    mNoInternetTextView.setVisibility(View.VISIBLE);
+                    mtryAgainButton.setVisibility(View.VISIBLE);
+                    internetLL.setVisibility(View.VISIBLE);
+                    Toast.makeText(MainActivity.this, "Problem Loading Data Please Try Again Later", Toast.LENGTH_LONG).show();
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    private void loadImages() {
+        new ImageData(this).execute("", mFirebaseUser, mFirebasePassword);
     }
 
     private void initViews() {
@@ -58,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mRecyclerView.addOnScrollListener(mRecyclerScrollListener);
         internetLL = (LinearLayout) findViewById(R.id.internetLL);
-        new ImageData(this).execute("");
     }
 
 
@@ -108,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
 
     public void loadNextPage(){
 
-        new ImageData(MainActivity.this).execute(nextCursor);
+        new ImageData(MainActivity.this).execute(nextCursor, mFirebaseUser, mFirebasePassword);
         if(adapter.progressBar != null && adapter.tryAgain != null && adapter.noInternet != null) {
             adapter.progressBar.setVisibility(View.VISIBLE);
             adapter.tryAgain.setVisibility(View.GONE);
@@ -176,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.tryAgain:
-                new ImageData(this).execute("");
+                new ImageData(this).execute("", mFirebaseUser, mFirebasePassword);
                 mNoInternetTextView.setVisibility(View.GONE);
                 mtryAgainButton.setVisibility(View.GONE);
                 mProgressBar.setVisibility(View.VISIBLE);

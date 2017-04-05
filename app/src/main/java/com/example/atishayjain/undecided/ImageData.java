@@ -39,8 +39,8 @@ public class ImageData extends AsyncTask<String, Void, String> {
            // headerMap.put("", "");
             //headerMap.put("", "");
 
-            String username = "736494723855755";
-            String password = "batDo73eEW8gENOMWzB7hhJf_X8";
+            String username = params[1];
+            String password = params[2];
             byte[] loginCredentaials = (username + ":" + password).getBytes();
             StringBuilder loginBuilder = new StringBuilder().append("Basic ").append(Base64.encodeToString(loginCredentaials, Base64.DEFAULT));
 

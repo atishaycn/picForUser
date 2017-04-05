@@ -33,7 +33,7 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/noInternet"
         android:clickable="false"
-
+        android:visibility="gone"
         />
 
     <Button
@@ -44,6 +44,7 @@
         android:id="@+id/tryAgain"
         android:layout_centerHorizontal="true"
         android:clickable="true"
+        android:visibility="gone"
         />
 </LinearLayout>
 
