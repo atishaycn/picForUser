@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -55,10 +56,23 @@ import static android.support.v4.app.ActivityCompat.requestPermissions;
 public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int WRITE_STORAGE_REQUEST = 1001;
+    private static Bitmap bmpImage;
     private LayoutInflater inflater;
 
     public static final int VIEW_ITEM = 0;
     public static final int VIEW_PROGRESS = 1;
+    private static Context cont;
+
+    public static void onResult(int grantResult) {
+        if(grantResult == 0){
+            if(bmpImage != null) {
+                saveImageToGallery(bmpImage);
+            }
+        }
+        else{
+            Toast.makeText(cont, "App doesn't have permissions.", Toast.LENGTH_LONG).show();
+        }
+    }
 
     public interface retryButtonClicked {
         void onClickRetry();
@@ -67,7 +81,6 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     retryButtonClicked mretryButtonClicked;
 
 
-    Context cont;
     int responseCode=0;
     //Model data  = new Model();
     public List<Resource> mlist = new ArrayList<Resource>();
@@ -184,8 +197,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                                    saveImageToGallery(bmp);
                                }
                                else{
-                                   Toast.makeText(cont, "App doesn't have permissions.", Toast.LENGTH_LONG).show();
                                    requsetStoragePermission();
+                                   bmpImage = bmp;
                                }
                            }
                        });
@@ -215,6 +228,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
+
+
     private boolean permissionGranted() {
         if(cont instanceof MainActivity) {
             if(ContextCompat.checkSelfPermission(cont, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
@@ -225,16 +240,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return false;
     }
 
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    //    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == WRITE_STORAGE_REQUEST){
-            if(grantResults[0] == 0){
 
-            } else{
-                Toast.makeText(cont, "App doesn't have permissions.", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
+
 
 
 
@@ -250,7 +257,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         cont.startActivity(Intent.createChooser(shareIntent, "SHARE"));
     }
 
-    private void saveToGallery(String absolutePath) {
+    private static void saveToGallery(String absolutePath) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
         contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
@@ -260,7 +267,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         toast.show();
     }
 
-    private void saveImageToGallery(Bitmap bmp){
+    private static void saveImageToGallery(Bitmap bmp){
         File file = new File(cont.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
         FileOutputStream out;
         try {

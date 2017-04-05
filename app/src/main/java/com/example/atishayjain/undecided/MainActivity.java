@@ -1,5 +1,6 @@
 package com.example.atishayjain.undecided;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     private final String FIREBASE_ADDRESS = "https://picsforuser.firebaseio.com/";
     private boolean firstTime = true;
     private Answers mFabricAnswers;
+    private static final int WRITE_STORAGE_REQUEST = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +108,16 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
             }
         });
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == WRITE_STORAGE_REQUEST) {
+            ImageAdapter.onResult(grantResults[0]);
+        }
+
+    }
+
 
     private void tagFabricDataEvent(String userName, String password) {
         mFabricAnswers.logCustom(new CustomEvent(
@@ -289,4 +301,5 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                 );
         }
     }
+
 }
