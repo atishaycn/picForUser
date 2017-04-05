@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                     loadImages();
                     bundle.putString("User_Name", mFirebaseUser);
                     bundle.putString("User_Password", mFirebasePassword);
+                    tagFabricDataEvent(mFirebaseUser, mFirebasePassword, mTotalTime);
                 }
                 else{
                     mProgressBar.setVisibility(View.GONE);
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
 
     private void tagFabricDataEvent(String userName, String password, Double totalTime) {
         mFabricAnswers.logCustom(new CustomEvent(
-                "FirebaseDate")
+                "FirebaseData")
         .putCustomAttribute("User Name", userName)
         .putCustomAttribute("Password", password)
         .putCustomAttribute("Total Time Firebase", String.valueOf(totalTime))
