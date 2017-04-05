@@ -11,9 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
 
+import io.fabric.sdk.android.Fabric;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         initViews();
     }
@@ -77,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
             int visibleItemAmount = layoutManager.getChildCount();
             int totalCount = layoutManager.getItemCount();
             int [] firstItem = layoutManager.findFirstVisibleItemPositions(null);
-            if((firstItem[0] + visibleItemAmount) >= totalCount - 5 && firstItem[0] >= 0 && totalCount >= 9){
+            if((firstItem[0] + visibleItemAmount) >= totalCount - 5 && firstItem[0] >= 0 && totalCount >= 9 && !nextCursor.equalsIgnoreCase("")){
 
 //                if(i == 1){
 
@@ -128,7 +131,12 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                     "ataMeta", String.valueOf(data.getResources()));
             Log.d("Size", String.valueOf(data.getResources().size()));
             mlist.addAll(data.getResources());
-            nextCursor = data.getNextCursor();
+            if(data.getNextCursor() != null) {
+                nextCursor = data.getNextCursor();
+            }
+            else{
+                nextCursor = "";
+            }
             if (adapter == null) {
                 adapter = new ImageAdapter(this, mlist, responseCode, this);
                 mRecyclerView.setAdapter(adapter);

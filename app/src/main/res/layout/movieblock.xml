@@ -28,7 +28,7 @@
         android:layout_centerInParent="true"
         android:clickable="true"
         android:minHeight="150dp"
-        android:minWidth="150dp"
+        android:minWidth="70dp"
         android:src="@mipmap/black16"
         />
 
