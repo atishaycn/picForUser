@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 
 
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     private Button mtryAgainButton;
     private ProgressBar mProgressBar;
     private LinearLayout internetLL;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
         layoutManager.setAutoMeasureEnabled(false);
         mRecyclerView.setLayoutManager(layoutManager);
         //mRecyclerView.setHasFixedSize(true);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mRecyclerView.addOnScrollListener(mRecyclerScrollListener);
         internetLL = (LinearLayout) findViewById(R.id.internetLL);
         new ImageData(this).execute("");
@@ -138,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                 nextCursor = "";
             }
             if (adapter == null) {
-                adapter = new ImageAdapter(this, mlist, responseCode, this);
+                adapter = new ImageAdapter(this, mlist, responseCode, this, mFirebaseAnalytics);
                 mRecyclerView.setAdapter(adapter);
             } else {
                 //adapter.notifyDataSetChanged();

@@ -31,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -69,17 +70,13 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     //Model data  = new Model();
     public List<Resource> mlist = new ArrayList<Resource>();
     //= Collections.emptyList();
-    public ImageAdapter(Context context, List<Resource> mlist, int responseCode, retryButtonClicked mretryButtonClicked){
+    public ImageAdapter(Context context, List<Resource> mlist, int responseCode, retryButtonClicked mretryButtonClicked, FirebaseAnalytics mFirebaseAnalytics){
         inflater = LayoutInflater.from(context);
-//        this.data = data;
         cont = context;
         this.mretryButtonClicked = mretryButtonClicked;
-//        mlist.addAll(data.getResults());
-//        Log.d("List", String.valueOf(mlist));
-//        Log.d("Size", String.valueOf(mlist.size()))
         this.mlist = mlist;
         this.responseCode = responseCode;
-        //this.mlist = mlist;
+        this.mFirebaseAnalytics = mFirebaseAnalytics;
     }
 
 
@@ -105,6 +102,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     MoviewViewHolder moviewViewHolderholder;
     ProgressViewHolder progressViewHolder;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -128,6 +126,16 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if(holder instanceof MoviewViewHolder){
             final MoviewViewHolder movieNewHolder = (MoviewViewHolder) holder;
             movieNewHolder.mImageProgressBar.setVisibility(View.VISIBLE);
+
+            movieNewHolder.movieImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("User Action", "Clicked on Image");
+                    mFirebaseAnalytics.logEvent("Image Clicked", bundle);
+                }
+            });
+
             if(mlist.get(position).getUrl() != null && !mlist.get(position).getUrl().isEmpty()) {
                 final String link = mlist.get(position).getUrl();
                // Picasso.with(cont).load(link).placeholder(R.mipmap.black16).into(movieNewHolder.movieImage);
@@ -141,6 +149,9 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                        movieNewHolder.shareImage.setOnClickListener(new View.OnClickListener(){
                            @Override
                            public void onClick(View view){
+                               Bundle bundle = new Bundle();
+                               bundle.putString("User Action", "Clicked on Share");
+                               mFirebaseAnalytics.logEvent("Share Image Clicked", bundle);
                                shareImage(bmp);
                            }
                        });
@@ -148,6 +159,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                        movieNewHolder.downloadImage.setOnClickListener(new View.OnClickListener() {
                            @Override
                            public void onClick(View v) {
+                               Bundle bundle = new Bundle();
+                               bundle.putString("User Action", "Clicked on Download");
+                               bundle.putString("User Granted Permission", String.valueOf(permissionGranted()));
+                               mFirebaseAnalytics.logEvent("Download Clicked", bundle);
                                if(permissionGranted()) {
                                    saveImageToGallery(bmp);
                                }
