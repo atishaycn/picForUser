@@ -49,10 +49,12 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     private boolean firstTime = true;
     private Answers mFabricAnswers;
     private static final int WRITE_STORAGE_REQUEST = 1001;
+    private double mStartTime,mEndTime, mStartCTime, mEndCTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mStartTime = System.currentTimeMillis();
         Fabric.with(this, new Crashlytics());
         mFabricAnswers = Answers.getInstance();
         setContentView(R.layout.activity_main);
@@ -68,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                     FirebaseData mFirebase = dataSnapshot .getValue(FirebaseData.class);
                     mFirebaseUser = mFirebase.getUsername();
                     mFirebasePassword = mFirebase.getPassword();
+                    mEndTime = System.currentTimeMillis();
+                double mTotalTime = mEndTime - mStartTime;
                 Bundle bundle = new Bundle();
                 if(mFirebaseUser != null && mFirebasePassword != null && firstTime){
                     firstTime = false;
@@ -84,19 +88,20 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                     if(mFirebaseUser == null && mFirebasePassword == null){
                         bundle.putString("User_Name", "Error");
                         bundle.putString("User_Password", "Error");
-                        tagFabricDataEvent("Error", "Error");
+                        tagFabricDataEvent("Error", "Error", mTotalTime);
                     }
                     else if(mFirebaseUser == null){
                         bundle.putString("User_Name", "Error");
                         bundle.putString("User_Password", mFirebasePassword);
-                        tagFabricDataEvent("Error", mFirebasePassword);
+                        tagFabricDataEvent("Error", mFirebasePassword, mTotalTime);
                     }
                     else {
                         bundle.putString("User_Name", mFirebaseUser);
                         bundle.putString("User_Password", "Error");
-                        tagFabricDataEvent(mFirebaseUser,"Error") ;
+                        tagFabricDataEvent(mFirebaseUser,"Error", mTotalTime) ;
                     }
                 }
+                bundle.putString("Total_Time", String.valueOf(mTotalTime));
                 mFirebaseAnalytics.logEvent("Firebase_Data", bundle);
 
 
@@ -119,16 +124,18 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     }
 
 
-    private void tagFabricDataEvent(String userName, String password) {
+    private void tagFabricDataEvent(String userName, String password, Double totalTime) {
         mFabricAnswers.logCustom(new CustomEvent(
                 "FirebaseDate")
         .putCustomAttribute("User Name", userName)
         .putCustomAttribute("Password", password)
+        .putCustomAttribute("Total Time Firebase", String.valueOf(totalTime))
         );
     }
 
     private void loadImages() {
         new ImageData(this).execute("", mFirebaseUser, mFirebasePassword);
+        mStartCTime = System.currentTimeMillis();
     }
 
     private void initViews() {
@@ -201,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                 "Page_Numbers")
                 .putCustomAttribute("page", String.valueOf(currentPage))
         );
+        mStartCTime = System.currentTimeMillis();
         new ImageData(MainActivity.this).execute(nextCursor, mFirebaseUser, mFirebasePassword);
         if(adapter.progressBar != null && adapter.tryAgain != null && adapter.noInternet != null) {
             adapter.progressBar.setVisibility(View.VISIBLE);
@@ -215,10 +223,13 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     @Override
     public void getImages(String stringBuilder, int responseCode) {
         Bundle bundle = new Bundle();
+        mEndCTime = System.currentTimeMillis();
+        double mTotalCTime = mEndCTime - mStartCTime;
+        bundle.putString("Total_CloudinaryTime", String.valueOf(mTotalCTime));
         if (stringBuilder != "Error" && responseCode == 200) {
             bundle.putString("Response_Code", String.valueOf(responseCode));
             bundle.putString("Response", stringBuilder);
-            tagFabricResponse(String.valueOf(responseCode), stringBuilder);
+            tagFabricResponse(String.valueOf(responseCode), stringBuilder, mTotalCTime);
             mProgressBar.setVisibility(View.GONE);
             mNoInternetTextView.setVisibility(View.GONE);
             mtryAgainButton.setVisibility(View.GONE);
@@ -252,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
             bundle.putString("Response_Code", String.valueOf(responseCode));
             bundle.putString("Response", stringBuilder);
             bundle.putString("Cursor_is", nextCursor);
-            tagFabricResponse(String.valueOf(responseCode), stringBuilder);
+            tagFabricResponse(String.valueOf(responseCode), stringBuilder, mTotalCTime);
             if (currentPage != 1) {
                 if(adapter != null && adapter.progressBar != null && adapter.tryAgain != null && adapter.noInternet != null) {
                     adapter.progressBar.setVisibility(View.GONE);
@@ -275,11 +286,12 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
         isLoading = false;
     }
 
-    private void tagFabricResponse(String responseCode, String response) {
+    private void tagFabricResponse(String responseCode, String response, Double mTotalTime) {
         mFabricAnswers.logCustom(new CustomEvent(
                 "LoadedPageResponse")
                 .putCustomAttribute("Response_Code", responseCode)
                 .putCustomAttribute("Response", response)
+                .putCustomAttribute("Total Cloudinary Time", String.valueOf(mTotalTime))
         );
     }
 
