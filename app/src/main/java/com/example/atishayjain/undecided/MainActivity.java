@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                     internetLL.setVisibility(View.VISIBLE);
                 }
             }
-        }, 10000);
+        }, 15000);
     }
 
     @Override
