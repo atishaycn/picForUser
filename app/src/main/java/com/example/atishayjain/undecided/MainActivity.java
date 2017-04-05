@@ -251,6 +251,9 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                 mtryAgainButton.setVisibility(View.GONE);
                 mProgressBar.setVisibility(View.VISIBLE);
                 internetLL.setVisibility(View.GONE);
+                Bundle bundle = new Bundle();
+                bundle.putString("Try_Again_Clicked", "Clicked");
+                mFirebaseAnalytics.logEvent("Try_Again", bundle);
         }
     }
 }
