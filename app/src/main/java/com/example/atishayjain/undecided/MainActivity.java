@@ -62,9 +62,12 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                     FirebaseData mFirebase = dataSnapshot .getValue(FirebaseData.class);
                     mFirebaseUser = mFirebase.getUsername();
                     mFirebasePassword = mFirebase.getPassword();
+                Bundle bundle = new Bundle();
                 if(mFirebaseUser != null && mFirebasePassword != null && firstTime){
                     firstTime = false;
                     loadImages();
+                    bundle.putString("User_Name", mFirebaseUser);
+                    bundle.putString("User_Password", mFirebasePassword);
                 }
                 else{
                     mProgressBar.setVisibility(View.GONE);
@@ -72,8 +75,21 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                     mtryAgainButton.setVisibility(View.VISIBLE);
                     internetLL.setVisibility(View.VISIBLE);
                     Toast.makeText(MainActivity.this, "Problem Loading Data Please Try Again Later", Toast.LENGTH_LONG).show();
-
+                    if(mFirebaseUser == null && mFirebasePassword == null){
+                        bundle.putString("User_Name", "Error");
+                        bundle.putString("User_Password", "Error");
+                    }
+                    else if(mFirebaseUser == null){
+                        bundle.putString("User_Name", "Error");
+                        bundle.putString("User_Password", mFirebasePassword);
+                    }
+                    else {
+                        bundle.putString("User_Name", mFirebaseUser);
+                        bundle.putString("User_Password", "Error");
+                    }
                 }
+
+                mFirebaseAnalytics.logEvent("Firebase_Date", bundle);
 
 
             }
@@ -152,6 +168,9 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
 
     public void loadNextPage(){
 
+        Bundle bundle = new Bundle();
+        bundle.putString("page", String.valueOf(currentPage));
+        mFirebaseAnalytics.logEvent("Page_Numbers", bundle);
         new ImageData(MainActivity.this).execute(nextCursor, mFirebaseUser, mFirebasePassword);
         if(adapter.progressBar != null && adapter.tryAgain != null && adapter.noInternet != null) {
             adapter.progressBar.setVisibility(View.VISIBLE);
@@ -165,7 +184,10 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     MainModel data = new MainModel();
     @Override
     public void getImages(String stringBuilder, int responseCode) {
+        Bundle bundle = new Bundle();
         if (stringBuilder != "Error" && responseCode == 200) {
+            bundle.putString("Response_Code", String.valueOf(responseCode));
+            bundle.putString("Response", stringBuilder);
             mProgressBar.setVisibility(View.GONE);
             mNoInternetTextView.setVisibility(View.GONE);
             mtryAgainButton.setVisibility(View.GONE);
@@ -196,6 +218,9 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
 //            }
         } else {
             // Toast.makeText(MainActivity.this, "No Internet", Toast.LENGTH_SHORT).show();
+            bundle.putString("Response_Code", String.valueOf(responseCode));
+            bundle.putString("Response", stringBuilder);
+            bundle.putString("Cursor_is", nextCursor);
             if (currentPage != 1) {
                 if(adapter != null && adapter.progressBar != null && adapter.tryAgain != null && adapter.noInternet != null) {
                     adapter.progressBar.setVisibility(View.GONE);
@@ -213,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                 }
             }
         }
+        mFirebaseAnalytics.logEvent("LoadedPageResponse", bundle);
         isLoading = false;
     }
 
