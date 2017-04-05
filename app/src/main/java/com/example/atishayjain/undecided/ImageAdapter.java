@@ -31,6 +31,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.squareup.picasso.Picasso;
 
@@ -131,8 +133,12 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 @Override
                 public void onClick(View v) {
                     Bundle bundle = new Bundle();
-                    bundle.putString("User Action", "Clicked on Image");
-                    mFirebaseAnalytics.logEvent("Image Clicked", bundle);
+                    bundle.putString("User_Action", "Clicked on Image");
+                    mFirebaseAnalytics.logEvent("Image_Clicked", bundle);
+
+                    Answers.getInstance().logCustom(new CustomEvent("Image Clicked")
+                            .putCustomAttribute("User Action", "Clicked on Image")
+                    );
                 }
             });
 
@@ -150,8 +156,13 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                            @Override
                            public void onClick(View view){
                                Bundle bundle = new Bundle();
-                               bundle.putString("User Action", "Clicked on Share");
-                               mFirebaseAnalytics.logEvent("Share Image Clicked", bundle);
+                               bundle.putString("User_Action", "Clicked on Share");
+                               mFirebaseAnalytics.logEvent("Share_Image_Clicked", bundle);
+
+                               Answers.getInstance().logCustom(new CustomEvent("Share Image Clicked")
+                                       .putCustomAttribute("User Action", "Clicked on Share")
+                               );
+
                                shareImage(bmp);
                            }
                        });
@@ -160,9 +171,15 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                            @Override
                            public void onClick(View v) {
                                Bundle bundle = new Bundle();
-                               bundle.putString("User Action", "Clicked on Download");
-                               bundle.putString("User Granted Permission", String.valueOf(permissionGranted()));
-                               mFirebaseAnalytics.logEvent("Download Clicked", bundle);
+                               bundle.putString("User_Action", "Clicked on Download");
+                               bundle.putString("User_Granted_Permission", String.valueOf(permissionGranted()));
+                               mFirebaseAnalytics.logEvent("Download_Clicked", bundle);
+
+                               Answers.getInstance().logCustom(new CustomEvent("Download Clicked")
+                                       .putCustomAttribute("User Action", "Clicked on Download")
+                                       .putCustomAttribute("User Granted Permission", String.valueOf(permissionGranted()))
+                               );
+
                                if(permissionGranted()) {
                                    saveImageToGallery(bmp);
                                }
