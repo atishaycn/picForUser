@@ -1,5 +1,6 @@
 package com.example.atishayjain.undecided;
 
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     private Answers mFabricAnswers;
     private static final int WRITE_STORAGE_REQUEST = 1001;
     private double mStartTime,mEndTime, mStartCTime, mEndCTime;
+    private boolean stillLoading = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,8 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
         userDetails.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                    FirebaseData mFirebase = dataSnapshot .getValue(FirebaseData.class);
+                stillLoading = false;
+                FirebaseData mFirebase = dataSnapshot .getValue(FirebaseData.class);
                     mFirebaseUser = mFirebase.getUsername();
                     mFirebasePassword = mFirebase.getPassword();
                     mEndTime = System.currentTimeMillis();
@@ -113,6 +116,17 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                 System.out.println("The read failed: " + databaseError.getMessage());
             }
         });
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(stillLoading){
+                    mProgressBar.setVisibility(View.GONE);
+                    mNoInternetTextView.setVisibility(View.VISIBLE);
+                    mtryAgainButton.setVisibility(View.VISIBLE);
+                    internetLL.setVisibility(View.VISIBLE);
+                }
+            }
+        }, 10000);
     }
 
     @Override
