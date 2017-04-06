@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     private double mStartTime,mEndTime, mStartCTime, mEndCTime;
     private boolean stillLoading = true;
     private String mFirebaseUrl;
+    public SharedPrefrencesManager mSharedPrefrencesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,9 +127,18 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                     mNoInternetTextView.setVisibility(View.VISIBLE);
                     mtryAgainButton.setVisibility(View.VISIBLE);
                     internetLL.setVisibility(View.VISIBLE);
+                    tagFirebaseTimeOutEvent();
+
                 }
             }
         }, 15000);
+    }
+
+    private void tagFirebaseTimeOutEvent() {
+        mFabricAnswers.logCustom(new CustomEvent("Firebase_Timeout"));
+        Bundle bundle = new Bundle();
+        bundle.putString("Timeout", "Firebase_Timeout");
+        mFirebaseAnalytics.logEvent("FirebaseTimeout", bundle);
     }
 
     @Override
@@ -332,4 +342,10 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
         }
     }
 
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mSharedPrefrencesManager.setNextCursor(nextCursor);
+    }
 }

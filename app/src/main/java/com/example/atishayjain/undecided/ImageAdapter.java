@@ -402,4 +402,6 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
         //return super.getItemViewType(position);
     }
+
+
 }
