@@ -9,6 +9,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class FirebaseData {
 
+    @SerializedName("appurl")
+    @Expose
+    private String appurl;
     @SerializedName("password")
     @Expose
     private String password;
@@ -30,6 +33,14 @@ public class FirebaseData {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getAppurl() {
+        return appurl;
+    }
+
+    public void setAppurl(String appurl) {
+        this.appurl = appurl;
     }
 
 }

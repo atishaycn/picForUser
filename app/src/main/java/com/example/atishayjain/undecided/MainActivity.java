@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     private static final int WRITE_STORAGE_REQUEST = 1001;
     private double mStartTime,mEndTime, mStartCTime, mEndCTime;
     private boolean stillLoading = true;
+    private String mFirebaseUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
                 FirebaseData mFirebase = dataSnapshot .getValue(FirebaseData.class);
                     mFirebaseUser = mFirebase.getUsername();
                     mFirebasePassword = mFirebase.getPassword();
+                    mFirebaseUrl = mFirebase.getAppurl();
                     mEndTime = System.currentTimeMillis();
                 double mTotalTime = mEndTime - mStartTime;
                 Bundle bundle = new Bundle();
@@ -266,6 +268,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
             if (adapter == null) {
                 adapter = new ImageAdapter(this, mlist, responseCode, this, mFirebaseAnalytics);
                 mRecyclerView.setAdapter(adapter);
+                adapter.setShareLink(mFirebaseUrl);
             } else {
                 //adapter.notifyDataSetChanged();
                 adapter.notifyItemRangeInserted(adapter.getItemCount(), mlist.size() - 1 );

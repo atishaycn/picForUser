@@ -62,6 +62,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public static final int VIEW_ITEM = 0;
     public static final int VIEW_PROGRESS = 1;
     private static Context cont;
+    private String link;
 
     public static void onResult(int grantResult) {
         if(grantResult == 0){
@@ -76,6 +77,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public interface retryButtonClicked {
         void onClickRetry();
+    }
+    
+    public void setShareLink(String link){
+        this.link = link;
     }
 
     retryButtonClicked mretryButtonClicked;
@@ -250,7 +255,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         Intent shareIntent = new Intent();
         //shareIntent.setPackage("com.whatsapp");
         shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "Shared via UNDECIDED");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Shared via Funny Pictures Collection. Download now. \n " + link);
         shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
         shareIntent.setType("image/*");
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
