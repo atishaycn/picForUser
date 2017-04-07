@@ -203,25 +203,13 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
             int visibleItemAmount = layoutManager.getChildCount();
             int totalCount = layoutManager.getItemCount();
             int [] firstItem = layoutManager.findFirstVisibleItemPositions(null);
-            if((firstItem[0] + visibleItemAmount) >= totalCount - 5 && firstItem[0] >= 0 && totalCount >= 9 && !nextCursor.equalsIgnoreCase("")){
-
-//                if(i == 1){
-
+            if((firstItem[0] + visibleItemAmount) >= totalCount - 5 && firstItem[0] >= 0 && totalCount >= 9 ){
                 if(!isLoading) {
-//                        progressBar.setVisibility(View.VISIBLE);
-                    //
                     isLoading = true;
                     Log.d("size", nextCursor);
-//                        new MoviesData(MainActivity.this).execute(String.valueOf(currentPage));
                     loadNextPage();
                 }
-
-//                    i = 2;
-//                }
             }
-
-
-
         }
     };
 
