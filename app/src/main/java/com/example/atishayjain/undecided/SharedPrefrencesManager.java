@@ -24,6 +24,6 @@ public class SharedPrefrencesManager {
     }
 
     public static String getNext_Cursor() {
-        return mSharedPrefrences.getString(Next_Cursor,"");
+        return mSharedPrefrences.getString(Next_Cursor,"new");
     }
 }

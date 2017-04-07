@@ -53,11 +53,12 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     private double mStartTime,mEndTime, mStartCTime, mEndCTime;
     private boolean stillLoading = true;
     private String mFirebaseUrl;
-    public SharedPrefrencesManager mSharedPrefrencesManager;
+    private SharedPrefrencesManager mSharedPrefrencesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mSharedPrefrencesManager = new SharedPrefrencesManager(getApplicationContext());
         mStartTime = System.currentTimeMillis();
         Fabric.with(this, new Crashlytics());
         mFabricAnswers = Answers.getInstance();
@@ -161,7 +162,11 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     }
 
     private void loadImages() {
-        new ImageData(this).execute("", mFirebaseUser, mFirebasePassword);
+        String nextCursorSaved = "";
+        if(!mSharedPrefrencesManager.getNext_Cursor().equalsIgnoreCase("new")){
+            nextCursorSaved = mSharedPrefrencesManager.getNext_Cursor();
+        }
+        new ImageData(this).execute(nextCursorSaved, mFirebaseUser, mFirebasePassword);
         mStartCTime = System.currentTimeMillis();
     }
 
@@ -263,6 +268,7 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
             else{
                 nextCursor = "";
             }
+            mSharedPrefrencesManager.setNextCursor(nextCursor);
             if (adapter == null) {
                 adapter = new ImageAdapter(this, mlist, responseCode, this, mFirebaseAnalytics);
                 mRecyclerView.setAdapter(adapter);
