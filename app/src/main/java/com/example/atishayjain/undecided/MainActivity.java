@@ -2,14 +2,19 @@ package com.example.atishayjain.undecided;
 
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +59,11 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
     private boolean stillLoading = true;
     private String mFirebaseUrl;
     private SharedPrefrencesManager mSharedPrefrencesManager;
+    private DrawerLayout mDrawer;
+    private Toolbar toolbar;
+    private NavigationView nvDrawer;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +73,10 @@ public class MainActivity extends AppCompatActivity implements ImageData.ImagesL
         Fabric.with(this, new Crashlytics());
         mFabricAnswers = Answers.getInstance();
         setContentView(R.layout.activity_main);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         getUserFromFirebase();
         initViews();
     }
